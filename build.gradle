@@ -25,6 +25,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springframework.ai:spring-ai-starter-model-openai'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+	implementation 'com.google.apis:google-api-services-drive:v3-rev20240521-2.0.0'
+	implementation 'com.google.auth:google-auth-library-oauth2-http:1.11.0'
+	implementation 'com.google.oauth-client:google-oauth-client-jetty:1.36.0'
+	implementation 'com.google.api-client:google-api-client:2.0.1'
+	implementation 'com.google.code.gson:gson:2.10.1'
+	implementation("com.google.http-client:google-http-client:2.1.0")
+	// AWS SDK for S3
+	implementation 'software.amazon.awssdk:s3:2.28.3'
+	implementation 'software.amazon.awssdk:aws-core:2.28.3'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'

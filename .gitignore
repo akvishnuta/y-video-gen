@@ -66,6 +66,8 @@ Thumbs.db
 
 # Application
 *.properties.local
+application-local.properties
 .env
 .env.local
+drive_creds.json
 

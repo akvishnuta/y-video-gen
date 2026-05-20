@@ -8,8 +8,10 @@ Y Video Gen is a Spring Boot application that leverages artificial intelligence 
 
 ## Features
 
-- 🤖 AI-powered video generation using Spring AI
+- 🤖 AI-powered video scene generation using Spring AI
 - 🎬 OpenAI integration for intelligent content creation
+- 📝 Generate video scripts and scenes from abstract themes
+- 💾 Automatic saving to Google Drive
 - 📚 RESTful API with comprehensive documentation
 - 📋 Swagger/OpenAPI UI for interactive API exploration
 - 🔄 Spring Boot 4.0.6 framework
@@ -21,6 +23,7 @@ Y Video Gen is a Spring Boot application that leverages artificial intelligence 
 - **Java 21** or higher
 - **Gradle** (or use the included `gradlew` wrapper)
 - **OpenAI API Key** for AI model integration
+- **Google Cloud Project** (optional, for Google Drive integration)
 - **Spring Boot 4.0.6**
 
 ## Installation
@@ -85,33 +88,60 @@ http://localhost:8080/api-docs
 #### Health Check
 - **GET** `/api/v1/health` - Check if the API is running
 
+#### Idea Generation
+- **POST** `/api/v1/ideas/generate-scenes` - Generate video scenes from a theme
+  - Request body:
+    ```json
+    {
+      "theme": "Your video theme",
+      "numberOfScenes": 5,
+      "saveToGoogleDrive": true
+    }
+    ```
+  - Response includes generated scenes and optional Google Drive file link
+
+- **GET** `/api/v1/ideas/generate-scenes/{theme}` - Generate scenes (simple GET endpoint)
+  - Parameters: `numberOfScenes` (default: 5)
+
 ## Project Structure
 
 ```
 src/
 ├── main/
 │   ├── java/com/logicsoft/yvideogen/
-│   │   ├── YvideogenApplication.java       # Main Spring Boot application
+│   │   ├── YvideogenApplication.java           # Main Spring Boot application
 │   │   ├── config/
-│   │   │   └── SwaggerConfig.java          # Swagger/OpenAPI configuration
-│   │   └── controller/
-│   │       └── HealthController.java       # Health check endpoint
+│   │   │   └── SwaggerConfig.java              # Swagger/OpenAPI configuration
+│   │   ├── controller/
+│   │   │   ├── HealthController.java           # Health check endpoint
+│   │   │   └── IdeaGenController.java          # Video idea generation endpoints
+│   │   ├── dto/
+│   │   │   ├── SceneGenerationRequest.java     # Request DTO for scene generation
+│   │   │   └── SceneGenerationResponse.java    # Response DTO for generated scenes
+│   │   ├── exception/
+│   │   │   ├── SceneGenerationException.java   # Scene generation errors
+│   │   │   └── GoogleDriveException.java       # Google Drive errors
+│   │   └── service/
+│   │       ├── SceneGenerationService.java     # AI-powered scene generation
+│   │       └── GoogleDriveService.java         # Google Drive integration
 │   └── resources/
-│       └── application.properties          # Application configuration
+│       ├── application.properties              # Application configuration
+│       └── application-local.properties        # Local development configuration
 └── test/
-    └── java/com/logicsoft/yvideogen/
-        └── YvideogenApplicationTests.java  # Integration tests
+    └── java/com/logicsoft/yvideogen/          # Integration tests
 ```
 
 ## Technology Stack
 
 - **Framework**: Spring Boot 4.0.6
 - **Language**: Java 21
-- **AI Integration**: Spring AI 2.0.0-M6
-- **AI Model**: OpenAI
+- **AI Integration**: Spring AI 2.0.0-M6 with OpenAI
+- **Cloud Integration**: Google Drive API v3
 - **Build Tool**: Gradle 8.x
 - **API Documentation**: Springdoc OpenAPI 2.3.0
-- **Utilities**: Lombok
+- **Authentication**: Google OAuth2 (for Drive API)
+- **JSON Processing**: Gson
+- **Utilities**: Lombok, SLF4J
 
 ## Configuration
 
@@ -172,6 +202,11 @@ public class VideoController {
 - `spring-boot-starter-webmvc` - Web MVC support
 - `spring-ai-starter-model-openai` - OpenAI integration
 - `springdoc-openapi-starter-webmvc-ui` - Swagger UI
+- `google-api-services-drive` - Google Drive API
+- `google-auth-library-oauth2-http` - Google OAuth2 authentication
+- `google-oauth-client-jetty` - OAuth2 client
+- `google-api-client` - Google API client
+- `gson` - JSON processing
 - `lombok` - Code generation utility
 
 ## Building for Production
@@ -220,6 +255,38 @@ logging.file.name=logs/application.log
 - Ensure the application is running on the correct port
 - Verify `springdoc.swagger-ui.enabled=true` in properties
 
+### Issue: Google Drive upload fails
+- Verify Google Drive credentials file path is set in environment variables
+- Ensure the service account has Google Drive API permissions
+- Check that the credentials JSON file is valid
+- For detailed Google Drive setup, see [GOOGLE_DRIVE_SETUP.md](./GOOGLE_DRIVE_SETUP.md)
+
+## Using Idea Generation with Google Drive Integration
+
+### Generate Video Scenes
+
+The application can generate video scenes from abstract themes using OpenAI's GPT-4 model:
+
+```bash
+curl -X POST http://localhost:8080/api/v1/ideas/generate-scenes \
+  -H "Content-Type: application/json" \
+  -d '{
+    "theme": "The future of artificial intelligence in healthcare",
+    "numberOfScenes": 5,
+    "saveToGoogleDrive": true
+  }'
+```
+
+### Save to Google Drive
+
+To enable Google Drive integration:
+
+1. Follow the setup guide in [GOOGLE_DRIVE_SETUP.md](./GOOGLE_DRIVE_SETUP.md)
+2. Set the `GOOGLE_DRIVE_CREDENTIALS_FILE` environment variable
+3. Optionally set `GOOGLE_DRIVE_FOLDER_ID` for a specific destination folder
+
+The generated scenes will be automatically saved as a text file in Google Drive and a shareable link will be returned.
+
 ## Contributing
 
 1. Fork the repository
@@ -239,12 +306,17 @@ This project is licensed under the Apache License 2.0 - see the LICENSE file for
 
 ## Roadmap
 
+- [x] Scene generation from abstract themes
+- [x] Google Drive integration for saving generated content
 - [ ] Advanced video customization options
 - [ ] Video generation job queue
 - [ ] Webhook notifications for completed videos
 - [ ] Multi-language support
 - [ ] Video analytics and metrics
 - [ ] Admin dashboard
+- [ ] Support for multiple AI models
+- [ ] Batch scene generation
+- [ ] Template-based scene generation
 
 ---
 
